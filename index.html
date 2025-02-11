@@ -3,73 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>숫자 맞추기 게임</title>
+    <title>리듬 게임</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 50px;
+            background-color: #282c34;
+            color: white;
         }
-        .game-container {
-            display: inline-block;
-            padding: 20px;
-            border: 2px solid #333;
+        #game-container {
+            margin-top: 100px;
+        }
+        .button {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            background-color: #61dafb;
+            border: none;
             border-radius: 10px;
-            background-color: #f4f4f4;
-        }
-        input {
-            padding: 10px;
-            margin: 10px 0;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
             cursor: pointer;
+            font-size: 20px;
+            transition: transform 0.2s;
         }
-        .message {
-            margin-top: 20px;
-            font-size: 18px;
+        .button:hover {
+            transform: scale(1.1);
+        }
+        .inactive {
+            background-color: #ccc;
+        }
+        .active {
+            background-color: #ff6347;
+        }
+        .score {
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>숫자 맞추기 게임</h1>
-        <p>1부터 100까지의 숫자 중 하나를 맞춰 보세요!</p>
-        <input type="number" id="guess" min="1" max="100" placeholder="숫자를 입력하세요" />
-        <button onclick="checkGuess()">맞추기</button>
-        <div class="message" id="message"></div>
+    <div id="game-container">
+        <h1>리듬 게임</h1>
+        <p class="score">점수: <span id="score">0</span></p>
+        <div>
+            <button class="button inactive" id="btn1">1</button>
+            <button class="button inactive" id="btn2">2</button>
+            <button class="button inactive" id="btn3">3</button>
+            <button class="button inactive" id="btn4">4</button>
+        </div>
     </div>
 
     <script>
-        // 랜덤 숫자 생성 (1부터 100까지)
-        const randomNumber = Math.floor(Math.random() * 100) + 1;
-        let attempts = 0;
+        let score = 0;
+        let activeButton = null;
+        let gameInterval;
+        const scoreElement = document.getElementById("score");
 
-        function checkGuess() {
-            const userGuess = parseInt(document.getElementById("guess").value);
-            const messageElement = document.getElementById("message");
-
-            // 입력값이 없거나 범위 밖이면 경고
-            if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
-                messageElement.textContent = "1부터 100까지의 숫자를 입력하세요!";
-                messageElement.style.color = "red";
-                return;
-            }
-
-            attempts++;
-            
-            if (userGuess < randomNumber) {
-                messageElement.textContent = `너무 낮아요! ${attempts}번 시도했습니다. 다시 시도해 보세요!`;
-                messageElement.style.color = "blue";
-            } else if (userGuess > randomNumber) {
-                messageElement.textContent = `너무 높아요! ${attempts}번 시도했습니다. 다시 시도해 보세요!`;
-                messageElement.style.color = "blue";
+        // 버튼 클릭 함수
+        function buttonClick(buttonId) {
+            if (activeButton && buttonId === activeButton) {
+                score += 10; // 타이밍 맞으면 점수 추가
+                scoreElement.textContent = score;
+                activeButton = null;
+                resetButtons();
             } else {
-                messageElement.textContent = `정답! ${attempts}번 만에 맞췄습니다!`;
-                messageElement.style.color = "green";
+                alert("타이밍이 틀렸습니다!");
+                score -= 5; // 타이밍 틀리면 점수 차감
+                scoreElement.textContent = score;
             }
         }
+
+        // 버튼을 활성화하고 비활성화하는 함수
+        function resetButtons() {
+            const buttons = document.querySelectorAll(".button");
+            buttons.forEach(button => {
+                button.classList.remove("active");
+                button.classList.add("inactive");
+            });
+        }
+
+        // 버튼을 랜덤하게 활성화시키는 함수
+        function activateButton() {
+            resetButtons();
+            const buttons = document.querySelectorAll(".button");
+            const randomButton = buttons[Math.floor(Math.random() * buttons.length)];
+            randomButton.classList.remove("inactive");
+            randomButton.classList.add("active");
+            activeButton = randomButton.id;
+
+            // 버튼을 다시 비활성화
+            setTimeout(() => {
+                resetButtons();
+                activeButton = null;
+            }, 800); // 800ms 뒤에 비활성화
+        }
+
+        // 게임 루프 설정
+        function startGame() {
+            gameInterval = setInterval(activateButton, 1200); // 1.2초마다 버튼 활성화
+        }
+
+        // 버튼에 이벤트 리스너 추가
+        document.getElementById("btn1").addEventListener("click", () => buttonClick("btn1"));
+        document.getElementById("btn2").addEventListener("click", () => buttonClick("btn2"));
+        document.getElementById("btn3").addEventListener("click", () => buttonClick("btn3"));
+        document.getElementById("btn4").addEventListener("click", () => buttonClick("btn4"));
+
+        // 게임 시작
+        startGame();
     </script>
 </body>
 </html>
