@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숫자 맞추기 게임</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .game-container {
+            display: inline-block;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #f4f4f4;
+        }
+        input {
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>숫자 맞추기 게임</h1>
+        <p>1부터 100까지의 숫자 중 하나를 맞춰 보세요!</p>
+        <input type="number" id="guess" min="1" max="100" placeholder="숫자를 입력하세요" />
+        <button onclick="checkGuess()">맞추기</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // 랜덤 숫자 생성 (1부터 100까지)
+        const randomNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+
+        function checkGuess() {
+            const userGuess = parseInt(document.getElementById("guess").value);
+            const messageElement = document.getElementById("message");
+
+            // 입력값이 없거나 범위 밖이면 경고
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+                messageElement.textContent = "1부터 100까지의 숫자를 입력하세요!";
+                messageElement.style.color = "red";
+                return;
+            }
+
+            attempts++;
+            
+            if (userGuess < randomNumber) {
+                messageElement.textContent = `너무 낮아요! ${attempts}번 시도했습니다. 다시 시도해 보세요!`;
+                messageElement.style.color = "blue";
+            } else if (userGuess > randomNumber) {
+                messageElement.textContent = `너무 높아요! ${attempts}번 시도했습니다. 다시 시도해 보세요!`;
+                messageElement.style.color = "blue";
+            } else {
+                messageElement.textContent = `정답! ${attempts}번 만에 맞췄습니다!`;
+                messageElement.style.color = "green";
+            }
+        }
+    </script>
+</body>
+</html>
